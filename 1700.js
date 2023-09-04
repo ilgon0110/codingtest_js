@@ -6,20 +6,8 @@ let [_N, ...arr] = _;
 const N = Number(_N.split(" ")[0]);
 arr = arr.map((v) => v.split(" ").map(Number)).flat();
 
-let map = new Map();
-
-arr.forEach((v) => {
-  map.set(v, map.get(v) ? map.get(v) + 1 : 1);
-});
-
 let insert = [];
-
 let cnt = 0;
-const mySet = [...new Set(arr)];
-const myMap = new Map();
-mySet.forEach((v) => {
-  myMap.set(v, 0);
-});
 
 for (let i = 0; i < arr.length; i++) {
   const now = arr[i];
