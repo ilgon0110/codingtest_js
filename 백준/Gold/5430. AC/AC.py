@@ -1,20 +1,18 @@
 import sys
 from collections import deque
+input = sys.stdin.readline
 
 t = int(input())
 
 for i in range(t):
-    p = sys.stdin.readline().rstrip()
+    p = input().rstrip()
     n = int(input())
-    arr = sys.stdin.readline().rstrip()[1:-1].split(",")
+    arr = input().rstrip()[1:-1].split(",")
     queue = deque(arr)
-
-    rev, front, back = 0, 0, len(queue)-1
+    rev = 0
     flag = 0
     if n == 0:
         queue = []
-        front = 0
-        back = 0
 
     for j in p:
         if j == 'R':
