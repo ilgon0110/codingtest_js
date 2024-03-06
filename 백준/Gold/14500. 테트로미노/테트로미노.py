@@ -1,69 +1,55 @@
 import sys
 
-N, M = map(int, sys.stdin.readline().split())
-board = [list(map(int, sys.stdin.readline().split())) for _ in range(N)]
-visited = [[0 for _ in range(M)] for _ in range(N)]
+input = sys.stdin.readline
 
 dx = [-1, 0, 1, 0]
 dy = [0, -1, 0, 1]
 
-answer = 0
+N, M = map(int, input().split())
+board = []
+visited = [[0 for _ in range(M)] for _ in range(N)]
+for _ in range(N):
+    board.append(list(map(int, input().split())))
 
 
-def DFS(L, x, y, visited, total):
+def DFS(L, x, y, total):
     if L == 3:
-        global answer
-        answer = max(answer, total)
+        global ans
+        ans = max(ans, total)
         return
-    else:
+    elif L == 1:
+        for i in range(4):
+            nx = x+dx[i]
+            ny = y+dy[i]
+            if 0 <= nx < N and 0 <= ny < M and visited[nx][ny] == 0:
+                visited[nx][ny] = 1
+                DFS(L+1, x, y, total+board[nx][ny])
+                visited[nx][ny] = 0
+
         for i in range(4):
             nx = x + dx[i]
-            ny = y + dy[i]
-            if (nx >= 0 and nx < N and ny >= 0 and ny < M and visited[nx][ny] == 0):
-                total += board[nx][ny]
+            ny = y+dy[i]
+            if 0 <= nx < N and 0 <= ny < M and visited[nx][ny] == 0:
                 visited[nx][ny] = 1
-                DFS(L+1, nx, ny, visited, total)
+                DFS(L+1, nx, ny, total+board[nx][ny])
                 visited[nx][ny] = 0
-                total -= board[nx][ny]
-
-
-def except_DFS(L, x, y, visited, total):
-    if L == 1:
-        directions = [[[-1, 0], [0, 1]], [[1, 0], [0, 1]],
-                      [[1, 0], [0, -1]], [[-1, 0], [0, -1]]]
-        for direction in directions:
-            [one, two] = direction
-            nx = x + one[0]
-            ny = y + one[1]
-            nx2 = x + two[0]
-            ny2 = y + two[1]
-            if (nx >= 0 and nx < N and ny >= 0 and ny < M and visited[nx][ny] == 0):
-                if (nx2 >= 0 and nx2 < N and ny2 >= 0 and ny2 < M and visited[nx2][ny2] == 0):
-                    total = total + board[nx][ny] + board[nx2][ny2]
-                    visited[nx][ny] = 1
-                    visited[nx2][ny2] = 1
-                    global answer
-                    answer = max(answer, total)
-                    visited[nx][ny] = 0
-                    visited[nx2][ny2] = 0
-                    total = total - board[nx][ny] - board[nx2][ny2]
     else:
         for i in range(4):
-            nx = x + dx[i]
-            ny = y + dy[i]
-            if (nx >= 0 and nx < N and ny >= 0 and ny < M and visited[nx][ny] == 0):
-                total += board[nx][ny]
+            nx = x+dx[i]
+            ny = y+dy[i]
+            if 0 <= nx < N and 0 <= ny < M and visited[nx][ny] == 0:
                 visited[nx][ny] = 1
-                except_DFS(L+1, nx, ny, visited, total)
+                DFS(L+1, nx, ny, total+board[nx][ny])
                 visited[nx][ny] = 0
-                total -= board[nx][ny]
 
 
+answer = 0
 for i in range(N):
     for j in range(M):
         visited[i][j] = 1
-        DFS(0, i, j, visited, board[i][j])
-        except_DFS(0, i, j, visited, board[i][j])
+        ans = 0
+        DFS(0, i, j, board[i][j])
         visited[i][j] = 0
+        answer = max(ans, answer)
 
 print(answer)
