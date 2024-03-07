@@ -1,18 +1,25 @@
-V = int(input())
+import sys
 
+input = sys.stdin.readline
+
+V = int(input())
 graph = [[] for _ in range(V+1)]
 
 for _ in range(V):
-    num, *nodes = list(map(int, input().split()))
-    last = nodes.index(-1)
-    for i in range(0, last-1, 2):
-        graph[num].append([nodes[i], nodes[i+1]])
+    [start, *arr] = list(map(int, input().split()))
+    index = arr.index(-1)
+    for i in range(0, index, 2):
+        end = arr[i]
+        weight = arr[i+1]
+        graph[start].append((weight, end))
 
 def DFS(node, total, visited):
-    for to, weight in graph[node]:
+    for v in graph[node]:
+        weight, to = v
         if visited[to] == -1:
-            visited[to] = total+weight
-            DFS(to, total+weight, visited)
+            cost = total+weight
+            visited[to] = cost
+            DFS(to, cost, visited)
 
 visited = [-1 for _ in range(V+1)]
 visited[1] = 0
