@@ -1,10 +1,10 @@
 import sys
-
 input = sys.stdin.readline
 
 TC = int(input())
+INF = sys.maxsize
 
-def velman(start):
+def velman_ford(start):
     dist[start] = 0
     for check in range(N):
         for node in range(1, N+1):
@@ -20,15 +20,15 @@ for _ in range(TC):
     N, M, W = map(int, input().split())
     graph = [[] for _ in range(N+1)]
     for _ in range(M):
-        a, b, c = map(int, input().split())
-        graph[a].append((c, b))
-        graph[b].append((c, a))
+        S, E, T = map(int, input().split())
+        graph[S].append((T, E))
+        graph[E].append((T, S))
     for _ in range(W):
-        a, b, c = map(int, input().split())
-        graph[a].append((-c, b))
-    dist = [sys.maxsize for _ in range(N+1)]
+        S, E, T = map(int, input().split())
+        graph[S].append((-T, E))
 
-    if velman(1) == True:
+    dist = [INF for _ in range(N+1)]
+    if velman_ford(1) == True:
         print('NO')
     else:
         print('YES')
