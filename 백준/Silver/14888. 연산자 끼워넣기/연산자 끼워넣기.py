@@ -1,5 +1,4 @@
 import sys
-import copy
 
 input = sys.stdin.readline
 
@@ -32,14 +31,23 @@ def calculate(one,two,operator):
 
 answer = []
 
+max_answer = -sys.maxsize
+min_answer = sys.maxsize
 
 def recursive(L,tmp):
     if L == N-1:
-        numbers = copy.deepcopy(arr)
-        for i in range(N - 1):
-            final = calculate(numbers[i], numbers[i + 1], tmp[i])
-            numbers[i + 1] = final
-        answer.append(numbers[-1])
+        before = 0
+        final = 0
+        global max_answer
+        global min_answer
+        for i in range(-1,N - 1):
+            if i == -1:
+                final = arr[i+1]
+            else:
+                final = calculate(before, arr[i + 1], tmp[i])
+            before = final
+        max_answer = max(max_answer, final)
+        min_answer = min(min_answer ,final)
         return
     else:
         for i in range(N-1):
@@ -52,8 +60,8 @@ def recursive(L,tmp):
 
 recursive(0,[])
 
-print(max(answer))
-print(min(answer))
+print(max_answer)
+print(min_answer)
 
 
 
