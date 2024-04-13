@@ -1,10 +1,11 @@
 import sys
+from collections import deque
 
 input = sys.stdin.readline
 
 N,M,K = map(int,input().split())
 board = [[5 for _ in range(N)] for _ in range(N)]
-trees = [[[] for _ in range(N)] for _ in range(N)]
+trees = [[deque() for _ in range(N)] for _ in range(N)]
 fertilizer = []
 for _ in range(N):
     fertilizer.append(list(map(int,input().split())))
@@ -18,27 +19,24 @@ dx = [-1,-1,-1,0,0,1,1,1]
 dy = [-1,0,1,-1,1,-1,0,1]
 
 for year in range(K):
-    death = []
-    #봄
 
+    #봄
     for i in range(N):
         for j in range(N):
             if len(trees[i][j]) > 0:
                 tmp = []
-                trees[i][j].sort()
+                die_food = 0
                 for k in range(len(trees[i][j])):
-                    tree = trees[i][j][k]
+                    tree = trees[i][j].popleft()
                     # print('year:', year , tree , i,j)
                     if board[i][j] >= tree:
                         board[i][j] -= tree
                         tmp.append(tree+1)
                     else:
-                        death.append([tree,i,j])
-                trees[i][j] = tmp
-
-    #여름
-    for [tree,i,j] in death:
-        board[i][j] += tree//2
+                        die_food += tree//2
+                for t in tmp:
+                    trees[i][j].append(t)
+                board[i][j] += die_food
 
     #가을
     for i in range(N):
@@ -50,7 +48,7 @@ for year in range(K):
                             nx = i+dx[k]
                             ny = j+dy[k]
                             if 0<=nx<N and 0<=ny<N:
-                                trees[nx][ny].append(1)
+                                trees[nx][ny].appendleft(1)
 
     #겨울
     for i in range(N):
