@@ -1,30 +1,41 @@
+import sys
+import collections
+import math
+from collections import deque
+import copy
+import bisect
+import itertools
+import heapq
 
+#sys.stdin = open("input.txt", "r")
 
-while (True):
+#input = sys.stdin.readline
+
+while True:
     sr = str(input())
-    st = list()
-
-    if (sr == "."):
+    stack = list()
+    
+    if sr == '.':
         break
-
-    for cr in sr:
-        if (cr == "(" or cr == "["):
-            st.append(cr)
-
-        if (cr == ")"):
-            if (st and st[-1] == "("):
-                st.pop()
+    
+    for char in sr:
+        if (char == "(" or char == "["):
+            stack.append(char)
+        
+        if char == ")":
+            if (stack and stack[-1] == "("):
+                stack.pop()
             else:
-                st.append(cr)
+                stack.append(char)
                 break
-        elif (cr == "]"):
-            if (st and st[-1] == "["):
-                st.pop()
+        elif char == "]":
+            if (stack and stack[-1] == "["):
+                stack.pop()
             else:
-                st.append(cr)
+                stack.append(char)
                 break
-
-    if (st):
-        print("no")
+    
+    if stack:
+        print('no')
     else:
-        print("yes")
+        print('yes')
