@@ -1,15 +1,25 @@
 import sys
+import collections
+import math
 from collections import deque
+import copy
+import bisect
+import itertools
+import heapq
+
+#sys.stdin = open("input.txt", "r")
+
+input = sys.stdin.readline
 
 K = int(input())
-arr = [int(input()) for _ in range(K)]
+stack = []
 
-stack = deque()
-
-for v in arr:
-    if v == 0:
+for _ in range(K):
+    N = int(input())
+    
+    if N == 0:
         stack.pop()
     else:
-        stack.append(v)
+        stack.append(N)
 
-print(sum(stack))
+print(sum(stack))    
