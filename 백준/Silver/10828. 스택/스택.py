@@ -1,32 +1,46 @@
 import sys
+import collections
+import math
 from collections import deque
+import copy
+import bisect
+import itertools
+import heapq
+
+#sys.stdin = open("input.txt", "r")
+
+input = sys.stdin.readline
 
 N = int(input())
-orders = [list((input().split())) for _ in range(N)]
+stack = []
 
-stack = deque()
-
-for v in orders:
-    if v[0] == 'push':
-        stack.append(int(v[1]))
-    elif v[0] == 'pop':
-        if len(stack) > 0:
+for _ in range(N):
+    N = input().rstrip()
+    command = ''
+    num = 0
+    if 'push' in N:
+        [x,y] = list(map(str,N.split()))
+        command = x
+        num = int(y)
+    else:
+        command = N
+        
+    if command == 'push':
+        stack.append(num)
+    elif command == 'pop':
+        if stack:
             print(stack.pop())
         else:
             print(-1)
-    elif v[0] == 'size':
-        count = 0
-        for i in stack:
-            if int(i) == i:
-                count += 1
-        print(count)
-    elif v[0] == 'empty':
-        if len(stack) == 0:
-            print(1)
-        else:
+    elif command == 'size':
+        print(len(stack))
+    elif command == 'empty':
+        if stack:
             print(0)
-    elif v[0] == 'top':
-        if len(stack) > 0:
-            print(stack[len(stack)-1])
+        else:
+            print(1)
+    elif command == 'top':
+        if stack:
+            print(stack[-1])
         else:
             print(-1)
