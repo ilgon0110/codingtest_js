@@ -1,34 +1,50 @@
+import sys
+import collections
+import math
 from collections import deque
+import copy
+import bisect
+import itertools
+import heapq
 
-stack = deque()
+#sys.stdin = open("input.txt", "r")
+
+input = sys.stdin.readline
 
 N = int(input())
 arr = []
+stack = []
+
 for _ in range(N):
     arr.append(int(input()))
+    
+nowIdx = 0
+nowNum = 1
+ans = []
+insertNum = 0
 
-now = 0
-cnt = 1
-answer = []
-stack.append(cnt)
-answer.append('+')
-while (len(stack) and now < len(arr)):
-    if stack[len(stack) - 1] > arr[now]:
-        break
-    while (stack[len(stack)-1] != arr[now]):
-        cnt += 1
-        stack.append(cnt)
-        answer.append('+')
-    stack.pop()
-    answer.append('-')
-    now += 1
-    if len(stack) == 0 and now != len(arr):
-        cnt += 1
-        stack.append(cnt)
-        answer.append('+')
-
-if now == N:
-    for v in answer:
-        print(v)
-else:
-    print('NO')
+while nowIdx < N:
+    target = arr[nowIdx]
+    flag = True
+    if target >= nowNum:
+        while target >= nowNum:
+            stack.append(nowNum)
+            insertNum = nowNum
+            nowNum+=1
+            ans.append('+')
+            
+    else:
+        if(target != stack[-1]):
+            flag = False
+            print('NO')
+            break
+        
+        while stack and target == stack[-1]:
+            stack.pop()
+            ans.append("-")
+            nowIdx += 1
+    
+        
+if flag:
+    for x in ans:
+        print(x)
