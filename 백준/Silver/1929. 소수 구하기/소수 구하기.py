@@ -13,17 +13,33 @@ input = sys.stdin.readline
 
 M,N = map(int,input().split())
 
-def isPrime(num):
-    if num == 1:
-        return False
-    if num == 2:
-        return True
-    for i in range(2, math.ceil(math.sqrt(num))+1):
-        if num%i == 0:
-            return False
-    
-    return True
+arr = [i for i in range(2,N+1)]
+visited = [0 for i in range(2,N+1)]
+ans = []
+before = 0
 
-for i in range(M,N+1):
-    if isPrime(i):
-        print(i)
+L = len(arr)
+
+while True:
+    tmp = -1
+    for i in range(before, L):
+        if visited[i] != 1:
+            tmp = arr[i]
+            ans.append(arr[i])
+            visited[i] = 1
+            break
+            
+    if tmp == -1:
+        break
+    idx = tmp - 2
+    for i in range(idx+tmp,L,tmp):
+        visited[i] = 1
+    before = idx
+    #print(arr)
+    #print(visited)
+    #print(ans)
+
+for x in ans:
+    if x >= M:
+        print(x)
+
