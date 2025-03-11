@@ -1,32 +1,44 @@
+import sys
+import collections
+import math
 from collections import deque
 import copy
+import bisect
+import itertools
+import heapq
+
+#sys.stdin = open("input.txt", "r")
+
+input = sys.stdin.readline
 
 T = int(input())
 
-def isMostImportant(queue):
-    tmp = copy.deepcopy(queue)
-    [myNum, myPower] = tmp.popleft()
-    for v in tmp:
-        [num, power] = v
-        if power > myPower:
-            return False
-    return True
-
 for _ in range(T):
-    [N, M] = list(map(int, input().split()))
-    important = list(map(int, input().split()))
-    stack = deque()
-    arr = []
+    N,M = map(int,input().split())
+    arr = list(map(int,input().split()))
+    queue = deque()
     for i in range(N):
-        stack.append((i, important[i]))
-    while (len(stack)):
-        if isMostImportant(stack) == True:
-            arr.append(stack.popleft())
+        if i == M:
+            queue.append((arr[i],True))
         else:
-            stack.append(stack.popleft())
+            queue.append((arr[i], False))
 
-    for i in range(len(arr)):
-        [num, power] = arr[i]
-        if num == M:
-            print(i+1)
-            break
+    cnt = 0
+    while queue:
+        (node, target) = queue.popleft()
+        flag = False
+        for (x,_) in queue:
+            if node < x:
+                flag = True
+                queue.append((node,target))
+                break
+        
+        if flag == False:
+            cnt+=1
+            if target == True:
+                print(cnt)
+                break
+        #print(queue)
+
+    #print(ans.index())        
+
