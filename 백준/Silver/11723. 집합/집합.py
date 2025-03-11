@@ -1,29 +1,52 @@
 import sys
+import collections
+import math
+from collections import deque
+import copy
+import bisect
+import itertools
+import heapq
 
-m = int(sys.stdin.readline())
-S = set()
+#sys.stdin = open("input.txt", "r")
 
-for _ in range(m):
-    temp = sys.stdin.readline().strip().split()
-    
-    if len(temp) == 1:
-        if temp[0] == "all":
-            S = set([i for i in range(1, 21)])
-        else:
-            S = set()
-    
+input = sys.stdin.readline
+
+my_set = set()
+
+M = int(input())
+
+for _ in range(M):
+    tmp = str(input()).rstrip()
+    command = ""
+    number = 0
+    if 'all' in tmp or 'empty' in tmp:
+        command = tmp
     else:
-        func, x = temp[0], temp[1]
-        x = int(x)
-
-        if func == "add":
-            S.add(x)
-        elif func == "remove":
-            S.discard(x)
-        elif func == "check":
-            print(1 if x in S else 0)
-        elif func == "toggle":
-            if x in S:
-                S.discard(x)
-            else:
-                S.add(x)
+        x,y = map(str, tmp.split())
+        command = x
+        number = int(y)
+        
+    if command == "add":
+        my_set.add(number)
+    
+    if command == "remove":
+        if number in my_set:
+            my_set.remove(number)
+    
+    if command == "check":
+        if number in my_set:
+            print(1)
+        else:
+            print(0)
+    
+    if command == "toggle":
+        if number in my_set:
+            my_set.remove(number)
+        else:
+            my_set.add(number)
+    
+    if command == "all":
+        my_set = set([i for i in range(1,21)])
+    
+    if command == "empty":
+        my_set = set()
