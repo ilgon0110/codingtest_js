@@ -1,59 +1,53 @@
 import sys
+import collections
+import math
 from collections import deque
+import copy
+import bisect
+import itertools
+import heapq
 
-# sys.stdin = open("input.txt", "r")
+#sys.stdin = open("input.txt", "r")
 
-[N, M, V] = list(map(int, input().split()))
-arr = [list(map(int, input().split())) for _ in range(M)]
+N,M,V = map(int,input().split())
+board = [[] for _ in range(N+1)]
+ansDfs = []
+ansBfs = []
+for _ in range(M):
+    x,y = map(int,input().split())
+    board[x].append(y)
+    board[y].append(x)
 
-graph = [list() for _ in range(N + 1)]
+for i in range(1,N+1):
+    board[i].sort()
 
-for [a, b] in arr:
-    graph[a].append(b)
-    graph[b].append(a)
-
-visited = list(0 for _ in range(N+1))
-dfsAns = []
-
-for v in graph:
-    if (len(v) > 0):
-        v = v.sort()
-    else:
-        v = v
-
-
-def DFS(L):
-    dfsAns.append(L)
-    for i in range(0, len(graph[L])):
-        node = graph[L][i]
-        if (visited[node]):
+def dfs(node, visited):
+    visited[node] = 1
+    ansDfs.append(node)
+    
+    for nextNode in board[node]:
+        if visited[nextNode] == 1:
             continue
-        visited[node] = 1
-        DFS(node)
+        visited[nextNode] = 1
+        dfs(nextNode, visited)
 
-
-visited[V] = 1
-DFS(V)
-
-
-def BFS(graph):
-    visited = list(0 for _ in range(N+1))
+def bfs(node, visited):
     queue = deque()
-    ans = []
-    queue.append(V)
-    visited[V] = 1
-
-    while len(queue) > 0:
+    queue.append(node)
+    visited[node] = 1
+    
+    while queue:
         node = queue.popleft()
-        ans.append(node)
-        for i in range(0, len(graph[node])):
-            nv = graph[node][i]
-            if (visited[nv] == 1):
+        ansBfs.append(node)
+        
+        for nextNode in board[node]:
+            if visited[nextNode] == 1:
                 continue
-            visited[nv] = 1
-            queue.append(nv)
-    return ans
+            visited[nextNode] = 1
+            queue.append(nextNode)
 
+dfs(V,[0 for _ in range(N+1)])
+bfs(V, [0 for _ in range(N+1)])
 
-print(*dfsAns)
-print(*BFS(graph))
+print(*ansDfs)
+print(*ansBfs)
