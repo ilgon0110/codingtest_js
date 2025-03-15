@@ -1,19 +1,31 @@
 import sys
-input = sys.stdin.readline
+import collections
+import math
+from collections import deque
+import copy
+import bisect
+import itertools
+import heapq
 
-N, M = map(int, input().split())
-trees = list(map(int, input().split()))
+#sys.stdin = open("input.txt", "r")
+
+N,M = map(int,input().split())
+trees = list(map(int,input().split()))
 
 lt = 0
 rt = max(trees)
 ans = 0
-while (lt <= rt):
-    mid = (lt+rt)//2
-    take_tree = 0
+
+def cutting(num):
+    total = 0
     for tree in trees:
-        if tree > mid:
-            take_tree += tree-mid
-    if take_tree >= M:
+        if tree > num:
+            total += tree-num
+    return total
+
+while lt<=rt:
+    mid = (lt+rt)//2
+    if cutting(mid) >= M:
         lt = mid+1
         ans = mid
     else:
