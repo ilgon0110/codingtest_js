@@ -1,46 +1,44 @@
 import sys
+import collections
+import math
 from collections import deque
+import copy
+import bisect
+import itertools
+import heapq
+
+#sys.stdin = open("input.txt", "r")
+
 input = sys.stdin.readline
 
-N, M = map(int, input().split())
-
+N,M = map(int,input().split())
 graph = [[] for _ in range(N+1)]
-
+ans = sys.maxsize
+person = sys.maxsize
 for _ in range(M):
-    A, B = map(int, input().split())
-    graph[A].append(B)
-    graph[B].append(A)
+    a,b = map(int,input().split())
+    graph[a].append(b)
+    graph[b].append(a)
 
-
-def BFS(node, target):
+def dijkstra(x):
+    dist = [sys.maxsize for _ in range(N+1)]
+    dist[x] = 0
     queue = deque()
-    queue.append(node)
-    dist = [0 for _ in range(N+1)]
-    visited = [0 for _ in range(N+1)]
-    while (queue):
-        nextNode = queue.popleft()
-        if nextNode == target:
-            break
-        for v in graph[nextNode]:
-            if visited[v] > 0:
-                continue
-            queue.append(v)
-            visited[v] = 1
-            dist[v] = dist[nextNode] + 1
-    return dist[target]
+    queue.append((x,0))
 
+    while queue:
+        node, cost = queue.popleft()
+        allCost = cost+1
+        for nextNode in graph[node]:            
+            if allCost < dist[nextNode]:
+                queue.append((nextNode,allCost))
+                dist[nextNode] = allCost
+    return sum(dist[1:N+1])
 
-tmp = []
-for i in range(1, N+1):
-    ans = 0
-    for j in range(1, N+1):
-        if i == j:
-            continue
-        ans += BFS(i, j)
-    tmp.append(ans)
+for i in range(N,0,-1):
+    result = dijkstra(i)
+    if result <= ans:
+        ans  = result
+        person = i
 
-target = min(tmp)
-for i in range(len(tmp)):
-    if tmp[i] == target:
-        print(i+1)
-        break
+print(person)
