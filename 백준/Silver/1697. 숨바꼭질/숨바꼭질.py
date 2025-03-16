@@ -1,26 +1,36 @@
 import sys
+import collections
+import math
 from collections import deque
+import copy
+import bisect
+import itertools
+import heapq
 
-[N, K] = list(map(int, input().split()))
-dist = [0 for _ in range(100002)]
-queue = deque()
+#sys.stdin = open("input.txt", "r")
 
-queue.append(N)
-flag = 0
-if (N == K):
-    print(0)
-    flag = 1
-while queue and flag == 0:
-    pos = queue.popleft()
-    tmp = [pos-1, pos+1, 2*pos]
-    for npos in tmp:
-        if (npos < 0 or npos > 100000):
-            continue
-        if (npos == K):
-            print(dist[pos]+1)
-            flag = 1
-            break
-        if (dist[npos]):
-            continue
-        dist[npos] = dist[pos] + 1
-        queue.append(npos)
+input = sys.stdin.readline
+
+N,K = map(int,input().split())
+dist = [sys.maxsize for _ in range(100001)]
+def bfs(x):
+    dist[x] = 0
+    queue = deque()
+    queue.append((x,0))
+    
+    while queue:
+        node,cost = queue.popleft()
+        move = [node-1,node+1,2*node]
+        
+        for m in move:
+            if m < 0 or m > 100000:
+                continue
+            nextCost = cost+1
+            if nextCost < dist[m]:
+                dist[m] = nextCost
+                queue.append((m,nextCost))
+
+    return dist[K]
+
+print(bfs(N))
+        
