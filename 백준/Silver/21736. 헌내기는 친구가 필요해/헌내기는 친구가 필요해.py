@@ -1,33 +1,52 @@
 import sys
+import collections
+import math
 from collections import deque
+import copy
+import bisect
+import itertools
+import heapq
 
-N, M = map(int, sys.stdin.readline().split())
-board = [list(sys.stdin.readline()) for _ in range(N)]
+#sys.stdin = open("input.txt", "r")
+
+input = sys.stdin.readline
+
+N,M = map(int,input().split())
+board = []
+dx = [-1,0,1,0]
+dy = [0,-1,0,1]
 visited = [[0 for _ in range(M)] for _ in range(N)]
+for _ in range(N):
+    board.append(list(map(str,input().rstrip())))
 
-dx = [-1, 0, 1, 0]
-dy = [0, -1, 0, 1]
-
-answer = 0
+def bfs(x,y):
+    queue = deque()
+    queue.append((x,y)) 
+    visited[x][y] = 1
+    total = 0
+    
+    while queue:
+        x,y = queue.popleft()
+        for k in range(4):
+            nx = x+dx[k]
+            ny = y+dy[k]
+            if nx<0 or nx >= N or ny<0 or ny >=M:
+                continue
+            if board[nx][ny] == 'O':
+                board[nx][ny] = 'X'
+                queue.append((nx,ny))
+            elif board[nx][ny] == 'P':
+                board[nx][ny] = 'X'
+                total+=1
+                queue.append((nx,ny))
+    return total
+            
 for i in range(N):
     for j in range(M):
         if board[i][j] == 'I':
-            queue = deque()
-            visited[i][j] = 1
-            queue.append([i, j])
-            while queue:
-                [x, y] = queue.popleft()
-                if board[x][y] == 'P':
-                    answer += 1
-                for k in range(4):
-                    nx = x+dx[k]
-                    ny = y+dy[k]
-                    if nx >= 0 and nx < N and ny >= 0 and ny < M:
-                        if (board[nx][ny] == 'O' or board[nx][ny] == 'P') and visited[nx][ny] == 0:
-                            visited[nx][ny] = 1
-                            queue.append([nx, ny])
+            ans = bfs(i,j)
 
-if answer == 0:
-    print('TT')
+if ans == 0:
+    print("TT")
 else:
-    print(answer)
+    print(ans)
