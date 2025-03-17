@@ -1,33 +1,47 @@
 import sys
+import collections
+import math
 from collections import deque
+import copy
+import bisect
+import itertools
+import heapq
 
-N, M = map(int, sys.stdin.readline().split())
-board = [list(map(int, sys.stdin.readline().split())) for _ in range(N)]
+#sys.stdin = open("input.txt", "r")
+input = sys.stdin.readline
 
-dx = [-1, 0, 1, 0]
-dy = [0, -1, 0, 1]
-dist = [[0 for _ in range(M)] for _ in range(N)]
-visited = [[0 for _ in range(M)] for _ in range(N)]
-queue = deque()
+N,M = map(int,input().split())
+board = []
+ans = [[0 for _ in range(M)] for _ in range(N)]
+dx = [-1,0,1,0]
+dy = [0,-1,0,1]
+for _ in range(N):
+    board.append(list(map(int,input().split())))
 
 for i in range(N):
     for j in range(M):
         if board[i][j] == 2:
-            queue.append([i, j])
-            while (queue):
-                [x, y] = queue.popleft()
-                for i in range(4):
-                    nx = x + dx[i]
-                    ny = y + dy[i]
-                    if nx >= 0 and nx < N and ny >= 0 and ny < M and visited[nx][ny] == 0 and board[nx][ny] == 1:
-                        dist[nx][ny] = dist[x][y] + 1
-                        visited[nx][ny] = 1
-                        queue.append([nx, ny])
-                        
+            board[i][j] = 0
+            queue = deque()
+            queue.append([i,j,0])
+            
+            while queue:
+                [x,y,dist] = queue.popleft()
+                ans[x][y] = dist
+                for k in range(4):
+                    nx = x+dx[k]
+                    ny = y+dy[k]
+                    
+                    if nx<0 or nx >=N or ny<0 or ny>=M:
+                        continue
+                    if board[nx][ny] == 1:
+                        board[nx][ny] = 0
+                        queue.append((nx,ny,dist+1))
+
 for i in range(N):
     for j in range(M):
-        if dist[i][j] == 0 and board[i][j] == 1:
-            dist[i][j] = -1
+        if board[i][j] == 1 and ans[i][j] == 0:
+            ans[i][j] = -1
 
-for v in dist:
-    print(' '.join(map(str, v)))
+for x in ans:
+    print(*x)
