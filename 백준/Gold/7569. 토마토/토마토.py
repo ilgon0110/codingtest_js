@@ -1,71 +1,70 @@
 import sys
+import collections
+import math
 from collections import deque
+import copy
+import bisect
+import itertools
+import heapq
 
-[M, N, H] = list(map(int, input().split()))
+#sys.stdin = open("input.txt", "r")
+input = sys.stdin.readline
 
-dx = [-1, 0, 1, 0]
-dy = [0, -1, 0, 1]
+M,N,H = map(int,input().split())
+board = [[[] for _ in range(M)] for _ in range(N)]
+for z in range(H):
+    for i in range(N):
+        tmp = list(map(int,input().split()))
+        for j in range(M):
+            board[i][j].append(tmp[j])
+dx = [-1,0,1,0]
+dy = [0,-1,0,1]
 
-board = [[list(map(int, input().split())) for _ in range(N)] for _ in range(H)]
-
-tomatoNone = True
-
-dist = [[[0 for _ in range(M)] for _ in range(N)] for _ in range(H)]
-queue = deque()
-for i in range(H):
-    arr = board[i]
-    for j in range(N):
-        for m in range(M):
-            if arr[j][m] == 1:
-                queue.append([j, m, i])
-                dist[i][j][m] = 1
-            elif arr[j][m] == 0:
-                tomatoNone = False
-            elif arr[j][m] == -1:
-                dist[i][j][m] = -1
-
-if tomatoNone == True:
-    print(0)
-else:
+def bfs():
+    queue=deque()
+    visited = [[[-1 for _ in range(H)] for _ in range(M)] for _ in range(N)]
+    ans = 0
+    
+    for i in range(N):
+        for j in range(M):
+            for z in range(H):
+                if board[i][j][z] == 1:
+                    queue.append([i,j,z,0])
+                    visited[i][j][z] = 0
+                
     while queue:
-        [x, y, idx] = queue.popleft()
-        # 동서남북
+        [x,y,z,day] = queue.popleft()
+        
         for k in range(4):
-            nx = x + dx[k]
-            ny = y + dy[k]
-            if 0 <= nx < N and 0 <= ny < M and board[idx][nx][ny] == 0:
-                board[idx][nx][ny] = 1
-                dist[idx][nx][ny] = dist[idx][x][y] + 1
-                queue.append([nx, ny, idx])
+            nx = x+dx[k]
+            ny = y+dy[k]
+            if nx<0 or nx>=N or ny<0 or ny>=M:
+                continue
+            if visited[nx][ny][z] == -1 and board[nx][ny][z] == 0:
+                visited[nx][ny][z] = day+1
+                queue.append([nx,ny,z,day+1])
+            if z+1 < H:
+                if visited[x][y][z+1] == -1 and board[x][y][z+1] == 0:
+                    visited[x][y][z+1] = day+1
+                    queue.append([x,y,z+1,day+1])
+            if z-1 >= 0:
+                if visited[x][y][z-1] == -1 and board[x][y][z-1] == 0:
+                    visited[x][y][z-1] = day+1
+                    queue.append([x,y,z-1,day+1])
+    
+    for i in range(N):
+        for j in range(M):
+            for z in range(H):
+                if board[i][j][z] == -1:
+                    continue
+                if visited[i][j][z] == -1:
+                    ans = -1
+                    return ans
+                else:
+                    ans = max(visited[i][j][z], ans)
+    
+    return ans                
+    
+    
 
-        # 앞뒤
-        if idx == 0 and H > 1:
-            if board[idx+1][x][y] == 0:
-                board[idx+1][x][y] = 1
-                queue.append([x, y, idx+1])
-                dist[idx+1][x][y] = dist[idx][x][y] + 1
-        elif idx == H-1 and H > 1:
-            if board[idx-1][x][y] == 0:
-                board[idx-1][x][y] = 1
-                queue.append([x, y, idx-1])
-                dist[idx-1][x][y] = dist[idx][x][y] + 1
-        elif 0 < idx < H-1:
-            if board[idx-1][x][y] == 0:
-                board[idx-1][x][y] = 1
-                queue.append([x, y, idx-1])
-                dist[idx-1][x][y] = dist[idx][x][y] + 1
-            if board[idx+1][x][y] == 0:
-                board[idx+1][x][y] = 1
-                queue.append([x, y, idx+1])
-                dist[idx+1][x][y] = dist[idx][x][y] + 1
-
-    def ans(arr):
-        answer = 0
-        for i in range(H):
-            for j in range(N):
-                for m in range(M):
-                    if arr[i][j][m] == 0:
-                        return -1
-                    answer = max(arr[i][j][m], answer)
-        return answer-1
-    print(ans(dist))
+print(bfs())
