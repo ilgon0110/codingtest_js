@@ -1,48 +1,60 @@
 import sys
+import collections
+import math
 from collections import deque
+import copy
+import bisect
+import itertools
+import heapq
+
+#sys.stdin = open("input.txt", "r")
+input = sys.stdin.readline
 
 T = int(input())
 
-def D(n):
-    return (n*2) % 10000
+def D(num):
+    return (2*num)%10000
 
-
-def S(n):
-    return (n-1) % 10000
-
-
-def L(n):
-    return (((n % 1000) // 100)*1000) + (((n % 100) // 10) * 100) + ((n % 10) * 10) + n // 1000
-
-
-def R(n):
-    return (n % 10) * 1000 + (n // 1000) * 100 + ((n % 1000) // 100) * 10 + ((n % 100) // 10)
-
-
+def S(num):
+    if num == 0:
+        return 9999
+    return num-1
+def L(num):
+    return (num%1000)*10+(num//1000)
+def R(num):
+    return (num-(num//10)*10)*1000+(num//10)
 for _ in range(T):
-    A, B = map(int, sys.stdin.readline().rstrip().split())
-    queue = deque()
-    queue.append((A, ''))
-    checked = [False for _ in range(10001)]
+    A,B = map(int,input().split())
+    
+    def bfs(start):
+        queue = deque()
+        visited = [0 for _ in range(10001)]
+        queue.append((start,""))
+        visited[start] = 1
+        
+        while queue:
+            num,track = queue.popleft()
+            if num == B:
+                return track
 
-    while (queue):
-        (N, text) = queue.popleft()
-        if (N == B):
-            print(text)
-            break
-        d = D(N)
-        if not checked[d]:
-            checked[d] = True
-            queue.append((d, text+'D'))
-        s = S(N)
-        if not checked[s]:
-            checked[s] = True
-            queue.append((s, text+'S'))
-        l = L(N)
-        if not checked[l]:
-            checked[l] = True
-            queue.append((l, text+'L'))
-        r = R(N)
-        if not checked[r]:
-            checked[r] = True
-            queue.append((r, text+'R'))
+            d = D(num)
+            if visited[d] == 0:
+                visited[d] = 1
+                queue.append((d,track+'D'))
+            
+            s = S(num)
+            if visited[s] == 0:
+                visited[s] = 1
+                queue.append((s,track+'S'))
+            
+            l = L(num)
+            if visited[l] == 0:
+                visited[l] = 1
+                queue.append((l,track+'L'))
+            
+            r = R(num)
+            if visited[r] == 0:
+                visited[r] = 1
+                queue.append((r,track+'R'))
+    
+    print(bfs(A))
