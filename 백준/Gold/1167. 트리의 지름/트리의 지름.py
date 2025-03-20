@@ -1,31 +1,45 @@
 import sys
+import collections
+import math
+from collections import deque
+import copy
+import bisect
+import itertools
+import heapq
 
+#sys.stdin = open("input.txt", "r")
 input = sys.stdin.readline
 
 V = int(input())
 graph = [[] for _ in range(V+1)]
-
 for _ in range(V):
-    [start, *arr] = list(map(int, input().split()))
-    index = arr.index(-1)
-    for i in range(0, index, 2):
-        end = arr[i]
-        weight = arr[i+1]
-        graph[start].append((weight, end))
+    tmp = list(map(int,input().split()))
+    x = tmp[0]
+    for i in range(1,len(tmp),2):
+        if tmp[i] == -1:
+            break
+        graph[x].append((tmp[i+1],tmp[i]))
 
-def DFS(node, total, visited):
-    for v in graph[node]:
-        weight, to = v
-        if visited[to] == -1:
-            cost = total+weight
-            visited[to] = cost
-            DFS(to, cost, visited)
+def dijkstra(start):
+    dist = [sys.maxsize for _ in range(V+1)]
+    queue=deque()
+    queue.append(start)
+    dist[start] = 0
+    
+    while queue:
+        node = queue.popleft()
+        for (nextCost,nextNode) in graph[node]:
+            allCost = nextCost+dist[node]
+            if dist[nextNode] > allCost:
+                dist[nextNode] = allCost
+                queue.append(nextNode)
+    
+    tmp = dist[1:len(dist)]
+    targetIndex = tmp.index(max(tmp))
+    return [targetIndex+1 , dist]
 
-visited = [-1 for _ in range(V+1)]
-visited[1] = 0
-DFS(1, 0, visited)
-start = visited.index(max(visited))
-dist = [-1 for _ in range(V+1)]
-dist[start] = 0
-DFS(start, 0, dist)
-print(max(dist))
+[mostFar, _] = dijkstra(1)
+[mostFar2, _] = dijkstra(mostFar)
+[_, dist] = dijkstra(mostFar)
+
+print(dist[mostFar2])
