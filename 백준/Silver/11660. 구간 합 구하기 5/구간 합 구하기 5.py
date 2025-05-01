@@ -1,39 +1,41 @@
 import sys
+import collections
+import math
+from collections import deque
+import copy
+import bisect
+import itertools
+import heapq
 
+#sys.stdin = open("input.txt", "r")
 input = sys.stdin.readline
 
-N, M = map(int, input().split())
+N,M = map(int,input().split())
 board = []
 dp = [[0 for _ in range(N)] for _ in range(N)]
-for _ in range(N):
-    board.append(list(map(int, input().split())))
 
-dp[0][0] = board[0][0]
+for _ in range(N):
+    board.append(list(map(int,input().split())))
 
 for i in range(N):
-    for j in range(N):
-        if i == 0 and j > 0:
-            dp[i][j] = dp[i][j-1] + board[i][j]
-        else:
-            tmp = 0
-            tmp = dp[i-1][j] + board[i][j]
-            if j > 0:
-                tmp += dp[i][j-1] - dp[i-1][j-1]
-            dp[i][j] = tmp
-
+    dp[i][0] = board[i][0]
+    for j in range(1,N):
+        dp[i][j] = board[i][j] + dp[i][j-1]
+        
 for _ in range(M):
-    x1, y1, x2, y2 = map(int, input().split())
-    ans = 0
-    x1 = x1-1
-    y1 = y1-1
-    x2 = x2-1
-    y2 = y2-1
-    if y1 > 0:
-        ans = dp[x2][y2] - dp[x2][y1-1]
-    else:
-        ans = dp[x2][y2]
-    if x1 > 0 and y1 > 0:
-        ans -= (dp[x1-1][y2] - dp[x1-1][y1-1])
-    elif x1 > 0:
-        ans -= dp[x1-1][y2]
-    print(ans)
+    a,b,c,d = map(int,input().split())
+    x1 = a-1
+    y1 = b-1
+    x2 = c-1
+    y2 = d-1
+    total = 0
+    
+    for i in range(x1,x2+1):
+        if y1 >= 1:
+            total += dp[i][y2] - dp[i][y1-1]
+        else:
+            total += dp[i][y2]
+            
+    print(total)
+    
+    
