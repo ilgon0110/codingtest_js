@@ -1,42 +1,69 @@
 import sys
+import collections
+import math
+from collections import deque
+import copy
+import bisect
+import itertools
 import heapq
 
-N, E = map(int, sys.stdin.readline().split())
+#sys.stdin = open("input.txt", "r")
+input = sys.stdin.readline
 
+N,E = map(int,input().split())
 graph = [[] for _ in range(N+1)]
 
 for _ in range(E):
-    a, b, c = map(int, sys.stdin.readline().split())
-    graph[a].append([b, c])
-    graph[b].append([a, c])
+    a,b,c = map(int,input().split())
+    graph[a].append((c,b))
+    graph[b].append((c,a))
+v1,v2 = map(int,input().split())
 
-v1, v2 = map(int, sys.stdin.readline().split())
-
-def dijkstra(node, dist):
+def dijkstra(start,target):
     queue = []
-    dist[node] = 0
-    heapq.heappush(queue, [node, 0])
+    dist = [sys.maxsize for _ in range(N+1)]
+    dist[start] = 0
+    heapq.heappush(queue,(0,start,[start]))
 
     while queue:
-        [target, weight] = heapq.heappop(queue)
-        for to, nextWeight in graph[target]:
-            cost = weight + nextWeight
-            if dist[to] <= cost:
-                continue
-            dist[to] = cost
-            heapq.heappush(queue, [to, cost])
-    return dist
+        cost,node, track = heapq.heappop(queue)
+        if node == target:
+            flag = False
+            for trackNode in track:
+                if target == v1 and trackNode == v2:
+                    flag = True
+                elif target == v2 and trackNode == v1:
+                    flag = True
+            return (dist[node],flag)
+        for weight,to in graph[node]:
+            if dist[to] > weight+cost:
+                dist[to] = weight+cost
+                heapq.heappush(queue,(weight+cost,to, track+[to]))
+    
+    return (dist[target],False)
+        
+a,flagA = dijkstra(1,v1)
+b,_ =dijkstra(v1,v2)
+c,_ = dijkstra(v2,N)
 
+one = 0
+if flagA:
+    tmp,_ = dijkstra(v1,N)
+    one = a+tmp
+else:
+    one = a+b+c
 
-result = [[]]
+d,flagD = dijkstra(1,v2)
+e,_ = dijkstra(v2,v1)
+f,_ = dijkstra(v1,N)
+two = 0
+if flagD:
+    tmp,_ = dijkstra(v2,N)
+    two = d+tmp
+else:
+    two = d+e+f
 
-result.append(dijkstra(1, [sys.maxsize for _ in range(N+1)]))
-result.append(dijkstra(v1, [sys.maxsize for _ in range(N+1)]))
-result.append(dijkstra(v2, [sys.maxsize for _ in range(N+1)]))
-
-ans = min(result[1][v1] + result[2][v2] + result[3][N],
-          result[1][v2] + result[3][v1] + result[2][N])
-
+ans = min(one,two)
 if ans >= sys.maxsize:
     print(-1)
 else:
