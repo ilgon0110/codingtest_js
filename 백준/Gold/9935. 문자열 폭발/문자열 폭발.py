@@ -1,25 +1,36 @@
 import sys
+import collections
+import math
 from collections import deque
+import copy
+import bisect
+import itertools
+import heapq
 
+#sys.stdin = open("input.txt", "r")
 input = sys.stdin.readline
 
-text = input().rstrip()
-bomb = input().rstrip()
-stack = deque()
+stack = []
+text = list(input().rstrip())
+bomb = list(input().rstrip())
+
+def isBomb():
+    flag = True
+    for i in range(len(bomb)):
+        if stack[len(stack)-len(bomb)+i] != bomb[i]:
+            flag = False
+    return flag
 
 for char in text:
     stack.append(char)
-    if len(stack) < len(bomb):
-        continue
-    tmp = []
-    for i in range(len(stack)-1, len(stack)-len(bomb)-1, -1):
-        tmp.append(stack[i])
-    tmp = ''.join(reversed(tmp))
-    if tmp == bomb:
-        for i in range(len(stack)-1, len(stack)-len(bomb)-1, -1):
-            stack.pop()
+    
+    if len(stack) >= len(bomb):
+        bombCheck = isBomb()
+        if bombCheck:
+            for i in range(len(bomb)):
+                stack.pop()
 
-if len(stack) == 0:
-    print('FRULA')
+if len(stack):
+    print("".join(stack))
 else:
-    print(''.join(stack))
+    print('FRULA')
