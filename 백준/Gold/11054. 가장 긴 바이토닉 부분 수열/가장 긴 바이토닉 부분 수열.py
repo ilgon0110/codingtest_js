@@ -1,29 +1,41 @@
 import sys
+import collections
+import math
+from collections import deque
+import copy
+import bisect
+import itertools
+import heapq
 
+#sys.stdin = open("input.txt", "r")
 input = sys.stdin.readline
+
 N = int(input())
-arr = list(map(int, input().split()))
+arr = list(map(int,input().split()))
 
-dp = [1 for _ in range(N)]
-
-for i in range(N):
-    for j in range(i):
-        if arr[j] < arr[i]:
-            dp[i] = max(dp[i], dp[j] + 1)
-
-arr2 = list(reversed(arr))
-dp2 = [1 for _ in range(N)]
+dp_max = [0 for _ in range(N)]
+dp_min = [0 for _ in range(N)]
 
 for i in range(N):
-    for j in range(i):
-        if arr2[j] < arr2[i]:
-            dp2[i] = max(dp2[i], dp2[j] + 1)
+    max_num = 0
+    target = arr[i]
+    for j in range(i+1):
+        if arr[j] < target:
+            max_num = max(max_num,dp_max[j]) 
+    dp_max[i] = max_num+1
+    
+    min_num = 0
 
-tmp = list(reversed(dp2))
+for i in range(N-1,-1,-1):
+    max_num = 0
+    target = arr[i]
+    for j in range(N-1,i,-1):
+        if arr[j] < target:
+            max_num = max(max_num,dp_min[j])
+    dp_min[i] = max_num+1
 
-ans = [0 for _ in range(N)]
-
+ans = 0
 for i in range(N):
-    ans[i] = dp[i] + tmp[i] - 1
+    ans = max(ans,dp_max[i]+dp_min[i]-1)
 
-print(max(ans))
+print(ans)
