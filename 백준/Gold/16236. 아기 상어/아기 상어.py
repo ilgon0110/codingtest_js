@@ -1,72 +1,80 @@
 import sys
+import collections
+import math
 from collections import deque
+import copy
+import bisect
+import itertools
+import heapq
 
+#sys.stdin = open("input.txt", "r")
 input = sys.stdin.readline
 
 N = int(input())
 board = []
 for _ in range(N):
-    board.append(list(map(int, input().split())))
+    board.append(list(map(int,input().split())))
 
-dx = [-1, 0, 1, 0]
-dy = [0, -1, 0, 1]
+sharkSize = 2
+exp = 0
+time = 0
+dx = [-1,0,1,0]
+dy = [0,-1,0,1]
 
-def findFish(sharkSize):
-    ans = []
-    for i in range(N):
-        for j in range(N):
-            if board[i][j] != 0 and board[i][j] != 9 and board[i][j] < sharkSize:
-                ans.append((i, j))
-    return ans
-
-def move(i, j, sharkSize):
-    dist = [[-1 for _ in range(N)] for _ in range(N)]
+def findEatFishes(x,y):
+    canEatFishes = []
+    visited = [[0 for _ in range(N)] for _ in range(N)]
     queue = deque()
-    queue.append((i, j))
-    dist[i][j] = 0
-
+    queue.append((x,y,0))
+    visited[x][y] = 1
+    min_Time = sys.maxsize
+    
     while queue:
-        x, y = queue.popleft()
+        x,y,cost = queue.popleft()
         for k in range(4):
             nx = x+dx[k]
             ny = y+dy[k]
-            if 0 <= nx < N and 0 <= ny < N and dist[nx][ny] == -1 and board[nx][ny] <= sharkSize:
-                dist[nx][ny] = dist[x][y] + 1
-                queue.append((nx, ny))
-    return dist
+            if nx<0 or nx>=N or ny<0 or ny>=N:
+                continue
+            if board[nx][ny] > sharkSize:
+                continue
+            # 먹을 수 있는 물고기
+            elif board[nx][ny] < sharkSize and visited[nx][ny] == 0 and board[nx][ny] > 0:
+                if min_Time >= cost+1:
+                    min_Time = cost+1
+                    canEatFishes.append((nx,ny,cost+1))
+            # 이동
+            elif board[nx][ny] == 0 and visited[nx][ny] == 0:
+                visited[nx][ny] = 1
+                queue.append((nx,ny,cost+1))
+            elif board[nx][ny] > 0 and board[nx][ny] == sharkSize and visited[nx][ny] == 0:
+                visited[nx][ny] = 1
+                queue.append((nx,ny,cost+1))
+    
+    return canEatFishes
+                
 
-sharkSize = 2
-time = 0
-eat = 0
 while True:
-    fishes = findFish(sharkSize)
-    if len(fishes) == 0:
-        break
-    sharkX = 0
-    sharkY = 0
+    shark_x = 0
+    shark_y = 0
     for i in range(N):
         for j in range(N):
             if board[i][j] == 9:
-                sharkX = i
-                sharkY = j
-    dist = move(sharkX, sharkY, sharkSize)
-    distance = sys.maxsize
-    go = []
-    for fish in fishes:
-        x, y = fish
-        if dist[x][y] < distance:
-            if dist[x][y] == -1:
-                continue
-            distance = dist[x][y]
-            go.append((x, y))
-    if len(go) == 0:
+                shark_x = i
+                shark_y = j
+    canEat = findEatFishes(shark_x,shark_y)
+    if len(canEat) == 0:
+        print(time)
         break
-    moveX, moveY = go.pop()
-    board[moveX][moveY] = 9
-    board[sharkX][sharkY] = 0
-    time += dist[moveX][moveY]
-    eat += 1
-    if eat == sharkSize:
-        sharkSize += 1
-        eat = 0
-print(time)
+    
+    canEat.sort(key=lambda x : (x[0], x[1]))
+    target_x = canEat[0][0]
+    target_y = canEat[0][1]
+    costTime = canEat[0][2]
+    exp+=1
+    time+=costTime
+    if sharkSize == exp:
+        sharkSize+=1
+        exp=0
+    board[shark_x][shark_y] = 0
+    board[target_x][target_y] = 9
