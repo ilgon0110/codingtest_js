@@ -1,37 +1,42 @@
 import sys
-import copy
 
 input = sys.stdin.readline
 
 N, B = map(int, input().split())
 
-board = [list(map(int, input().split())) for _ in range(N)]
+arr = []
 
-def multi(a, b):
-    tmp2 = copy.deepcopy(a)
+for _ in range(N):
+    arr.append(list(map(int, input().split())))
+
+
+def multi(arr1, arr2):
+    result = [[0 for _ in range(N)] for _ in range(N)]
     for i in range(N):
         for j in range(N):
-            tmp = 0
             for k in range(N):
-                tmp += a[i][k] * b[k][j]
-            tmp2[i][j] = tmp % 1000
-    return tmp2
+                result[i][j] += arr1[i][k] * arr2[k][j]
+    for i in range(N):
+        for j in range(N):
+            result[i][j] = result[i][j] % 1000
+    return result
 
-# 분할 정복
-def square(a, recursive):
-    if recursive == 1:
-        return a
-    tmp = square(a, recursive//2)
-    if recursive % 2 == 0:
-        return multi(tmp, tmp)
+
+def divide_conquer(arr, n):
+    if n == 1:
+        return arr
+    tmp = multi(arr, arr)
+    if n == 2:
+        return tmp
+    elif n % 2 == 0:
+        return divide_conquer(tmp, n//2)
     else:
-        return multi(multi(tmp, tmp), a)
+        return multi(arr, divide_conquer(tmp, n//2))
 
-ans = square(board, B)
 
+ans = divide_conquer(arr, B)
 for i in range(N):
     for j in range(N):
         ans[i][j] = ans[i][j] % 1000
-
-for v in ans:
-    print(*v)
+for i in range(N):
+    print(*ans[i])
